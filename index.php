@@ -268,7 +268,7 @@ function handleFiles($method, $parts) {
                 sendJson(['error' => 'Path required'], 400);
                 return;
             }
-            $content = readFile($path);
+            $content = readFilePath($path);
             sendJson(['success' => true, 'content' => $content]);
             break;
             
@@ -286,7 +286,7 @@ function handleFiles($method, $parts) {
                 return;
             }
             
-            writeFile($path, $content);
+            writeFilePath($path, $content);
             sendJson(['success' => true]);
             break;
             
@@ -483,7 +483,7 @@ function listFiles($path) {
     return $files;
 }
 
-function readFile($path) {
+function readFilePath($path) {
     $safePath = getSafePath($path);
     
     if (!file_exists($safePath)) {
@@ -497,7 +497,7 @@ function readFile($path) {
     return file_get_contents($safePath);
 }
 
-function writeFile($path, $content) {
+function writeFilePath($path, $content) {
     $safePath = getSafePath($path);
     
     // Create directory if needed
