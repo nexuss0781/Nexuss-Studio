@@ -1,4 +1,4 @@
-# Infinite Studio
+# Nexuss Studio
 
 ## 🚀 AI-Powered Development Environment
 
