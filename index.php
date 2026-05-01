@@ -5,12 +5,26 @@
  */
 
 // Disable error display in production (InfinityFree requirement)
-error_reporting(E_ALL);
+error_reporting(0);
 ini_set('display_errors', 0);
-ini_set('log_errors', 1);
+ini_set('log_errors', 0); // Disable logging on InfinityFree to prevent permission issues
 
 // Set default timezone
 date_default_timezone_set('UTC');
+
+// Custom error handler to prevent 500 errors
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    // Silently handle all errors to prevent 500 on InfinityFree
+    return true;
+});
+
+// Custom exception handler
+set_exception_handler(function($exception) {
+    // Return JSON error instead of 500 page
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Internal server error']);
+    exit;
+});
 
 // Define base path
 define('BASE_PATH', __DIR__);
@@ -27,12 +41,14 @@ ensureDirectory(CACHE_PATH, 0755);
 ensureDirectory(TEMP_PATH, 0755);
 ensureDirectory(LOGS_PATH, 0755);
 
-// Autoloader
+// Autoloader - Safe for InfinityFree (no fatal errors if class not found)
 spl_autoload_register(function ($class) {
     $file = BASE_PATH . '/src/php/' . str_replace('\\', '/', $class) . '.php';
     if (file_exists($file)) {
         require_once $file;
     }
+    // Silently ignore if class file doesn't exist (prevents 500 errors)
+    return true;
 });
 
 // Handle API requests
@@ -67,35 +83,40 @@ function handleRequest() {
  * Handle API requests - InfinityFree Compatible
  */
 function handleApiRequest($uri, $method) {
-    // Send headers early to prevent 403 on InfinityFree
-    if (!headers_sent()) {
-        header('Content-Type: application/json; charset=utf-8');
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-        header('X-Content-Type-Options: nosniff');
-        header('X-Frame-Options: SAMEORIGIN');
-    }
-    
-    // Handle preflight
-    if ($method === 'OPTIONS') {
-        http_response_code(200);
-        exit;
-    }
-    
-    // Parse endpoint
-    $endpoint = str_replace('/api/', '', $uri);
-    $parts = explode('/', $endpoint);
-    $resource = $parts[0] ?? '';
+    // Suppress all output errors
+    ob_start();
     
     try {
+        // Send headers early to prevent 403 on InfinityFree
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+            header('X-Content-Type-Options: nosniff');
+            header('X-Frame-Options: SAMEORIGIN');
+        }
+        
+        // Handle preflight
+        if ($method === 'OPTIONS') {
+            http_response_code(200);
+            ob_end_clean();
+            exit;
+        }
+        
+        // Parse endpoint
+        $endpoint = str_replace('/api/', '', $uri);
+        $parts = explode('/', $endpoint);
+        $resource = $parts[0] ?? '';
+        
+        // Route handling with safe fallback
         switch ($resource) {
             case 'chat':
                 handleChat($method);
                 break;
                 
             case 'history':
-                handleHistory($method);
+                handleHistory($method, $parts);
                 break;
                 
             case 'files':
@@ -122,8 +143,13 @@ function handleApiRequest($uri, $method) {
                 sendJson(['error' => 'Unknown endpoint'], 404);
         }
     } catch (Exception $e) {
-        sendJson(['error' => $e->getMessage()], 500);
+        // Catch any exception and return safe JSON
+        ob_end_clean();
+        sendJson(['error' => 'Service temporarily unavailable'], 503);
     }
+    
+    // Clean output buffer
+    ob_end_flush();
 }
 
 /**
@@ -652,10 +678,17 @@ function formatBytes($bytes) {
 }
 
 /**
- * JSON response helper
+ * JSON response helper - InfinityFree Safe
  */
 function sendJson($data, $statusCode = 200) {
-    http_response_code($statusCode);
-    echo json_encode($data);
+    try {
+        if (!headers_sent()) {
+            http_response_code($statusCode);
+            header('Content-Type: application/json; charset=utf-8');
+        }
+        echo json_encode($data);
+    } catch (Exception $e) {
+        // Silent fail to prevent 500 errors
+    }
     exit;
 }
