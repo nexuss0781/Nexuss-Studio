@@ -1,24 +1,31 @@
 <?php
 /**
- * Infinite Studio - Main Entry Point
- * PHP Backend Server
+ * Nexus Studio - Main Entry Point
+ * PHP Backend Server for InfinityFree
  */
 
-// Enable error reporting for development
+// Disable error display in production (InfinityFree requirement)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+// Set default timezone
+date_default_timezone_set('UTC');
 
 // Define base path
 define('BASE_PATH', __DIR__);
 define('PROJECTS_PATH', BASE_PATH . '/projects');
 define('HISTORY_PATH', BASE_PATH . '/history');
 define('CACHE_PATH', BASE_PATH . '/cache');
+define('TEMP_PATH', BASE_PATH . '/temp');
+define('LOGS_PATH', BASE_PATH . '/logs');
 
-// Ensure directories exist
-ensureDirectory(PROJECTS_PATH);
-ensureDirectory(HISTORY_PATH);
-define('CACHE_PATH', BASE_PATH . '/cache');
-ensureDirectory(CACHE_PATH);
+// Ensure directories exist with proper permissions
+ensureDirectory(PROJECTS_PATH, 0755);
+ensureDirectory(HISTORY_PATH, 0755);
+ensureDirectory(CACHE_PATH, 0755);
+ensureDirectory(TEMP_PATH, 0755);
+ensureDirectory(LOGS_PATH, 0755);
 
 // Autoloader
 spl_autoload_register(function ($class) {
@@ -32,11 +39,12 @@ spl_autoload_register(function ($class) {
 handleRequest();
 
 /**
- * Ensure directory exists
+ * Ensure directory exists with proper permissions
  */
-function ensureDirectory($path) {
+function ensureDirectory($path, $permissions = 0755) {
     if (!is_dir($path)) {
-        mkdir($path, 0755, true);
+        @mkdir($path, $permissions, true);
+        @chmod($path, $permissions);
     }
 }
 
@@ -56,13 +64,18 @@ function handleRequest() {
 }
 
 /**
- * Handle API requests
+ * Handle API requests - InfinityFree Compatible
  */
 function handleApiRequest($uri, $method) {
-    header('Content-Type: application/json');
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type');
+    // Send headers early to prevent 403 on InfinityFree
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+    }
     
     // Handle preflight
     if ($method === 'OPTIONS') {
@@ -356,7 +369,7 @@ function handleHealth() {
 }
 
 /**
- * Serve static files
+ * Serve static files - InfinityFree Compatible
  */
 function serveStaticFile($uri) {
     // Default to index.html
@@ -367,37 +380,49 @@ function serveStaticFile($uri) {
     $path = BASE_PATH . $uri;
     
     // Security: prevent directory traversal
-    $realPath = realpath($path);
+    $realPath = @realpath($path);
     if ($realPath === false || strpos($realPath, BASE_PATH) !== 0) {
         http_response_code(404);
-        echo 'File not found';
+        echo '404 Not Found';
         return;
     }
     
     if (!file_exists($path)) {
         http_response_code(404);
-        echo 'File not found';
+        echo '404 Not Found';
         return;
     }
     
-    // Set content type
+    // Set content type with charset
     $ext = pathinfo($path, PATHINFO_EXTENSION);
     $mimeTypes = [
-        'html' => 'text/html',
-        'css' => 'text/css',
-        'js' => 'application/javascript',
-        'json' => 'application/json',
+        'html' => 'text/html; charset=utf-8',
+        'css' => 'text/css; charset=utf-8',
+        'js' => 'application/javascript; charset=utf-8',
+        'json' => 'application/json; charset=utf-8',
         'png' => 'image/png',
         'jpg' => 'image/jpeg',
         'gif' => 'image/gif',
         'svg' => 'image/svg+xml',
-        'ico' => 'image/x-icon'
+        'ico' => 'image/x-icon',
+        'pdf' => 'application/pdf'
     ];
     
     $contentType = $mimeTypes[$ext] ?? 'text/plain';
-    header("Content-Type: $contentType");
     
-    readfile($path);
+    // Send headers safely
+    if (!headers_sent()) {
+        header("Content-Type: $contentType");
+        header('X-Content-Type-Options: nosniff');
+        
+        // Cache control for static assets
+        if (in_array($ext, ['css', 'js', 'png', 'jpg', 'gif', 'svg', 'ico'])) {
+            header('Cache-Control: public, max-age=2592000'); // 30 days
+        }
+    }
+    
+    // Read and output file
+    @readfile($path);
 }
 
 /**
