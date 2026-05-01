@@ -1,0 +1,265 @@
+/* ==========================================================================
+   Nexuss Studio - Component Styles
+   Premium styled components for elite UI experience
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Button Components
+   -------------------------------------------------------------------------- */
+.btn-nexuss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-family: var(--font-family);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+}
+
+.btn-nexuss-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.btn-nexuss-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+}
+
+.btn-nexuss-secondary {
+    background: rgba(51, 65, 85, 0.5);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-nexuss-secondary:hover {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: var(--accent-primary);
+}
+
+.btn-nexuss-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Card Components
+   -------------------------------------------------------------------------- */
+.card-nexuss {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.card-nexuss-hover {
+    transition: all var(--transition-base);
+}
+
+.card-nexuss-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Input Components
+   -------------------------------------------------------------------------- */
+.input-nexuss {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.input-nexuss:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.input-nexuss::placeholder {
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Badge Components
+   -------------------------------------------------------------------------- */
+.badge-nexuss {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+}
+
+.badge-nexuss-primary {
+    background: rgba(14, 165, 233, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.badge-nexuss-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-nexuss-warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--accent-warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-nexuss-error {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--accent-error);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Panel Components
+   -------------------------------------------------------------------------- */
+.panel-nexuss {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.panel-nexuss-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: rgba(30, 41, 59, 0.3);
+    border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+.panel-nexuss-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Message/Chat Bubble Components
+   -------------------------------------------------------------------------- */
+.message-nexuss {
+    display: flex;
+    gap: 1rem;
+    max-width: 85%;
+    animation: nexussSlideUp 0.3s ease-out;
+}
+
+.message-nexuss-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-nexuss-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.message-nexuss-content {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.25rem;
+}
+
+.message-nexuss-user .message-nexuss-content {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border: none;
+}
+
+/* --------------------------------------------------------------------------
+   Loading Spinner
+   -------------------------------------------------------------------------- */
+.spinner-nexuss {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid rgba(14, 165, 233, 0.2);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: nexussSpin 0.8s linear infinite;
+}
+
+.spinner-nexuss-sm {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-width: 2px;
+}
+
+.spinner-nexuss-lg {
+    width: 3rem;
+    height: 3rem;
+    border-width: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Divider
+   -------------------------------------------------------------------------- */
+.divider-nexuss {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(51, 65, 85, 0.8),
+        transparent
+    );
+    margin: 1.5rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbar Styling
+   -------------------------------------------------------------------------- */
+.scrollbar-nexuss::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.scrollbar-nexuss::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 3px;
+}
+
+.scrollbar-nexuss::-webkit-scrollbar-thumb {
+    background: rgba(51, 65, 85, 0.8);
+    border-radius: 3px;
+}
+
+.scrollbar-nexuss::-webkit-scrollbar-thumb:hover {
+    background: rgba(14, 165, 233, 0.5);
+}
