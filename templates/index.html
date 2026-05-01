@@ -286,17 +286,20 @@
     
     <!-- Scripts -->
     <script src="https://js.puter.com/v2/"></script>
-    <script>
-        // Initialize Lucide icons after DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
-    </script>
-    <script src="src/js/app.js"></script>
+    <!-- Load modules BEFORE app.js so they're available when app.js initializes -->
+    <script src="src/js/cache.js"></script>
+    <script src="src/js/api.js"></script>
     <script src="src/js/chat.js"></script>
     <script src="src/js/study-mode.js"></script>
     <script src="src/js/coding-mode.js"></script>
-    <script src="src/js/cache.js"></script>
-    <script src="src/js/api.js"></script>
+    <script src="src/js/app.js"></script>
+    <script>
+        // Initialize Lucide icons after all scripts are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
 </body>
 </html>
