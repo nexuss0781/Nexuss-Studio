@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Infinite Free Ready PHP/JS Studio - AI-Powered Development Environment">
+    <title>Infinite Studio | AI-Powered Development</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span>⚡</span>
+                <span>Infinite Studio</span>
+            </div>
+            
+            <div class="header-actions">
+                <!-- Model Selector -->
+                <select id="modelSelector" class="btn btn-secondary">
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="claude-3-opus">Claude 3 Opus</option>
+                    <option value="gemini-ultra">Gemini Ultra</option>
+                    <option value="llama-3-70b">Llama 3 70B</option>
+                    <option value="mistral-large">Mistral Large</option>
+                </select>
+                
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="btn btn-icon btn-secondary" title="Toggle Theme">
+                    🌙
+                </button>
+                
+                <!-- Settings -->
+                <button id="settingsBtn" class="btn btn-icon btn-secondary" title="Settings">
+                    ⚙️
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content - Dual Window Layout -->
+        <main class="main-content">
+            <!-- Left Panel: Chat with AI -->
+            <div class="window-panel chat-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span>💬</span>
+                        <span>AI Chat Assistant</span>
+                    </h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-icon btn-secondary" id="clearChatBtn" title="Clear Chat">
+                            🗑️
+                        </button>
+                        <button class="btn btn-icon btn-secondary" id="exportChatBtn" title="Export Chat">
+                            📥
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chat-container">
+                    <!-- Messages Area -->
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Welcome Message -->
+                        <div class="message assistant">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    Welcome to Infinite Studio! I'm your AI-powered development assistant. 
+                                    How can I help you today?
+                                    
+                                    <br><br>
+                                    You can:
+                                    <ul>
+                                        <li>Ask coding questions</li>
+                                        <li>Get help with file operations in Coding Mode</li>
+                                        <li>Study documents with Study Mode</li>
+                                        <li>Review and debug code</li>
+                                    </ul>
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Input Area -->
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <textarea 
+                                id="chatInput" 
+                                class="chat-input" 
+                                placeholder="Type your message... (Shift+Enter for new line)"
+                                rows="1"
+                            ></textarea>
+                            <button id="sendBtn" class="btn btn-primary">
+                                Send ➤
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resizable Divider -->
+            <div class="window-divider" id="windowDivider"></div>
+            
+            <!-- Right Panel: Workspace (Study/Coding Mode) -->
+            <div class="window-panel workspace-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span>📐</span>
+                        <span>Workspace</span>
+                    </h2>
+                    <div class="panel-actions">
+                        <!-- Mode Switcher -->
+                        <div class="mode-switcher">
+                            <button class="mode-btn active" data-mode="study">
+                                📚 Study Mode
+                            </button>
+                            <button class="mode-btn" data-mode="coding">
+                                💻 Coding Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="workspace-container">
+                    <!-- Study Mode -->
+                    <div class="study-mode" id="studyMode">
+                        <div class="pdf-viewer">
+                            <div class="pdf-page-container" id="pdfContainer">
+                                <canvas id="pdfCanvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="pdf-controls">
+                            <button class="page-nav-btn" id="prevPageBtn" disabled>← Previous</button>
+                            <span class="page-indicator">
+                                Page <span id="currentPage">1</span> of <span id="totalPages">-</span>
+                            </span>
+                            <button class="page-nav-btn" id="nextPageBtn" disabled>Next →</button>
+                            
+                            <div style="flex: 1;"></div>
+                            
+                            <button class="btn btn-secondary" id="uploadPdfBtn">
+                                📎 Upload PDF
+                            </button>
+                            <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                            
+                            <button class="btn btn-primary" id="analyzePageBtn">
+                                🔍 Analyze with AI
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Coding Mode -->
+                    <div class="coding-mode hidden" id="codingMode">
+                        <!-- File Sidebar -->
+                        <div class="file-sidebar">
+                            <div class="panel-header" style="border-bottom: 1px solid var(--border-color);">
+                                <span class="panel-title" style="font-size: var(--font-size-sm);">
+                                    📁 Project Files
+                                </span>
+                                <div class="panel-actions">
+                                    <button class="btn btn-icon btn-secondary" id="newFileBtn" title="New File">
+                                        📄
+                                    </button>
+                                    <button class="btn btn-icon btn-secondary" id="newFolderBtn" title="New Folder">
+                                        📁
+                                    </button>
+                                    <button class="btn btn-icon btn-secondary" id="refreshFilesBtn" title="Refresh">
+                                        🔄
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="file-tree" id="fileTree">
+                                <!-- File items will be populated dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- File Editor Area -->
+                        <div class="file-editor">
+                            <div class="editor-toolbar">
+                                <span id="currentFilePath" class="text-muted">No file selected</span>
+                                
+                                <div style="flex: 1;"></div>
+                                
+                                <button class="btn btn-secondary" id="saveFileBtn">
+                                    💾 Save
+                                </button>
+                                <button class="btn btn-secondary" id="diffFileBtn">
+                                    📊 Show Diff
+                                </button>
+                                <button class="btn btn-secondary" id="copyFileBtn">
+                                    📋 Copy
+                                </button>
+                                <button class="btn btn-secondary" id="moveFileBtn">
+                                    📦 Move
+                                </button>
+                                <button class="btn btn-secondary" id="deleteFileBtn">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                            
+                            <div class="editor-content" id="editorContent">
+                                <div class="text-muted" style="text-align: center; margin-top: 100px;">
+                                    Select a file from the sidebar to start editing
+                                </div>
+                            </div>
+                            
+                            <!-- Diff Viewer (Hidden by default) -->
+                            <div class="diff-viewer hidden" id="diffViewer">
+                                <!-- Diff content will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="src/js/app.js"></script>
+    <script src="src/js/chat.js"></script>
+    <script src="src/js/study-mode.js"></script>
+    <script src="src/js/coding-mode.js"></script>
+    <script src="src/js/cache.js"></script>
+    <script src="src/js/api.js"></script>
+</body>
+</html>
